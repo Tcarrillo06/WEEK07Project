@@ -30,7 +30,9 @@ public class ProjectsApp {
 	private List<String> operations = List.of(
 			"1) Add a project",	
 			"2) List projects",
-			"3) Select a project"
+			"3) Select a project",
+			"4) Update project details",
+			"5) Delete a project"
 			);
 	//formatter:on
 	
@@ -73,7 +75,15 @@ public class ProjectsApp {
 			 		
 			 	case 3:
 			 		selectProject();
-			 		break;		
+			 		break;	
+			 		
+			 	case 4:
+			 		updateProjectDetails();
+			 		break;
+			 		
+			 	case 5:
+			 		deleteProject();
+			 		break;
 			 		
 			 	default:
 			 		System.out.println("\n" + selection + " is not a valid selection.Try again.");
@@ -88,7 +98,47 @@ public class ProjectsApp {
 		
 	}
 	
-    private void selectProject() {
+    private void deleteProject() {
+    	listProjects();
+    	
+    	Integer projectId = getIntInput("Enter the ID of the project to delete");
+    	
+    	projectService.deleteProject(projectId);
+    	
+    	System.out.println("Project " + projectId + " was deleted successfully.");
+    	
+    	if(Objects.nonNull(curProject) && curProject.getProjectId().equals(projectId)) {
+    		
+    	}
+}
+
+	private void updateProjectDetails() {
+	if (Objects.isNull(curProject)) {
+		System.out.println("\nPlease select a project.");
+		return;
+	}
+	
+	String projectName = getStringInput("Enter the project name [" + curProject.getProjectName() + "]");
+	BigDecimal estimatedHours = getDecimalInput("Enter the estimated hours [" + curProject.getEstimatedHours() + "]");
+	BigDecimal actualHours = getDecimalInput("Enter the actual hours + [" + curProject.getActualHours() + "]");
+	Integer difficulty = getIntInput("Enter the project difficulty(1-5) [" + curProject.getDifficulty() + "]");
+	String notes = getStringInput("Enter project notes [" + curProject.getNotes() + "]");
+	
+	Project project = new Project();
+	
+	project.setProjectId(curProject.getProjectId());
+	project.setProjectName(Objects.isNull(projectName) ? curProject.getProjectName() : projectName);
+	project.setEstimatedHours(Objects.isNull(estimatedHours) ? curProject.getEstimatedHours() : estimatedHours);
+	project.setActualHours(Objects.isNull(actualHours) ? curProject.getActualHours() : actualHours);
+	project.setDifficulty(Objects.isNull(difficulty) ? curProject.getDifficulty() : difficulty);
+	project.setNotes(Objects.isNull(notes) ? curProject.getNotes() : notes);
+	
+	projectService.modifyProjectDetails(project);
+	
+	curProject = projectService.fetchProjectById(curProject.getProjectId());
+}
+
+	private void selectProject() {
     	listProjects();
     	Integer projectId = getIntInput("Enter a project ID to select a project");
     	
@@ -98,6 +148,9 @@ public class ProjectsApp {
     	
 	
 }
+    
+//** Create method listProjects(). It should take no parameters and should return nothing. In the method:
+//Create a variable to hold a List of Projects named projects. Assign the variable the results of a method call to projectService.fetchAllProjects().
 
 	private void listProjects() {
 	List<Project> projects = projectService.fetchAllProjects();
@@ -114,7 +167,7 @@ public class ProjectsApp {
 		String projectName = getStringInput("Enter the project name");
 		BigDecimal estimatedHours = getDecimalInput("Enter the estimated hours");
 		BigDecimal actualHours = getDecimalInput("Enter the actual hours");
-		Integer dificulty = getIntInput("Enter the project difficulty(1-5)");
+		Integer difficulty = getIntInput("Enter the project difficulty(1-5)");
 		String notes = getStringInput("Enter project notes");
 		
 		
@@ -123,7 +176,7 @@ public class ProjectsApp {
 		project.setProjectName(projectName);
 		project.setEstimatedHours(estimatedHours);
 		project.setActualHours(actualHours);
-		project.setDifficulty(dificulty);
+		project.setDifficulty(difficulty);
 		project.setNotes(notes);
 		
 		
